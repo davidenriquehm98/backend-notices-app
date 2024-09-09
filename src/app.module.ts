@@ -4,21 +4,33 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
+import { AuthModule } from './auth/auth.module';
+import { TransactionModule } from './transaction/transaction.module';
+import { Transaction } from './transaction/transaction.entity';
+import { CategoryService } from './category/category.service';
+import { CategoryModule } from './category/category.module';
+import { Category } from './category/category.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mariadb',
       host: 'localhost',
-      port: 3775,
+      port: 32768,
       username: 'root',
-      password: 'test',
+      password: 'root',
       database: 'finance_app',
-      entities: [User],
+      entities: [
+        User,
+      Transaction,
+    Category],
       synchronize: true,
     }),
-    UserModule],
+    UserModule,
+    AuthModule,
+    TransactionModule,
+    CategoryModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CategoryService],
 })
 export class AppModule {}
