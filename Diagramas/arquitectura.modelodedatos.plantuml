@@ -1,49 +1,52 @@
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
-' uncomment the following line and comment the first to use locally
-' !include C4_Component.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
 
-LAYOUT_WITH_LEGEND()
+!include FONTAWESOME/server.puml
+!include FONTAWESOME/envelope.puml
+!include FONTAWESOME/mobile_alt.puml
+!include FONTAWESOME/desktop.puml
+!include FONTAWESOME/database.puml
+!include FONTAWESOME/project_diagram.puml
 
-title Diagrama de componentes - Finance APP
+LAYOUT_TOP_DOWN()
+' LAYOUT_AS_SKETCH()
+' LAYOUT_WITH_LEGEND()
 
-Container(spa, "Web App - Finance", "javascript and angular", "Provee todas las funcionalidades que se incluyen en la aplicación y por medio de la cual el usuario accede desde el navegador.")
-Container(ma, "Mobile App - Finance", "Ionic", "Provee funcionalidades necesarias de la aplicacion Finance en un acceso de dispositivos mobiles")
-ContainerDb(db, "Database", "MariaDB - Relational Database Schema", "Provee la gestion de la gestión de los datos definidos en la aplicación finance APP.")
+scale 2
 
+title Diagrama de Infraestructura
 
-Container_Boundary(api, "API Backend Application") {
-    Component(sign, "Auth Controller", "MVC Rest Controller", "Permite a los usuarios poder ingresar a la aplicación")
-    Component(spent, "Spent Summary Controller", "MVC Rest Controller", "Provee al cliente la funcionalidad de gastos")
-    Component(income, "Income Controller", "MVC Rest Controller", "Provee la funcionalalidad de gestion de ingresos")
-    Component(dashboard, "Dashboard Controller", "Provee estadisticas especificas de la cuenta de usuario")
-
-    Component(security, "Metodo de Autenticado", "User/Password - Basic Auth", "Habilita la funcionalidad de autenticado para los usuarios")
-    Component(spentService, "Spent Service","Service/Repository","Habilita la capa para manejo de datos")
-    Component(dashboardService, "Dashboard Service","Service/Repository", "Habilita la capa de manejo de datos para dashboard")
-    Component(incomeService, "Income Service","Service/Repository", "Habilita la capa de manejo de datos para ingresos")
-    
-    Rel(sign, security, "Uses", "ORM")
-    Rel(spent, spentService, "Uses", "Service/Repository")
-    Rel(dashboard, dashboardService, "Uses", "Service/Repository")
-    Rel(income, incomeService, "Uses", "Service/Repository")
-
-
-    Rel(incomeService, db,  "Read & write to", "ORM")
-    Rel(dashboardService, db,  "Read & write to", "ORM")
-    Rel(spentService, db,  "Read & write to", "ORM")
-    Rel(security, db, "Read & write to", "ORM")
-    
+System_Boundary(a1, "Client App") {
+  Person(spa, "Single Page Application", "", "desktop")
+  Person(ma, "Mobile App", "", "mobile_alt")
 }
 
-Rel(spa, sign, "Uses", "JSON/HTTPS")
-Rel(spa, spent, "Uses", "JSON/HTTPS")
-Rel(spa, income, "Uses", "JSON/HTTPS")
-Rel(spa, dashboard, "Uses", "JSON/HTTPS")
+System_Boundary(b1, "Server Process") {
+    System(backend_webapp, "WEB Application", "", "server")
+    System(backend_api, "API", "", "server")
+}
 
-Rel(ma, sign, "Uses", "JSON/HTTPS")
-Rel(ma, spent, "Uses", "JSON/HTTPS")
-Rel(ma, income, "Uses", "JSON/HTTPS")
-Rel(ma, dashboard, "Uses", "JSON/HTTPS")
+Container(proxiDb, "ProxiSQL", "", "", "project_diagram")
+
+System_Boundary(c1, "Database Cluster") {
+    ContainerDb(node1, "Node1", "", "", "database")
+    ContainerDb(node2, "Node2", "", "", "database")
+    ContainerDb(node3, "Node3", "", "", "database")
+}
+
+Rel(ma, backend_api, "Uses", "HTTPS")
+Rel(spa, backend_webapp, "Uses", "HTTPS")
+Rel(backend_api, proxiDb, "Uses", "async, JSON/HTTPS")
+Rel(backend_webapp, proxiDb, "Uses", "async, JSON/HTTPS")
+
+Rel(proxiDb, node1, "Uses", "")
+Rel(proxiDb, node2, "Uses", "")
+Rel(proxiDb, node3, "Uses", "")
+
+Rel_Back_Neighbor(node1, node2, "", "sync")
+Rel_Back_Neighbor(node2, node3, "", "sync")
+Rel_Back_Neighbor(node2, node1, "", "")
+Rel_Back_Neighbor(node3, node2, "", "")
 
 @enduml

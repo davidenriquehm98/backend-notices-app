@@ -1,12 +1,21 @@
 @startuml
 
 ' Definición de entidades
+entity "Roles" as roles {
+    id : INT <<PK>>
+    nombre : STRING
+    descripcion : STRING
+    es_administrador : STRING
+    gestiona_noticias_eventos : STRING
+    gestiona_contactos_enlaces : STRING
+}
+
 entity "User" as user {
     * id : INT
     --
+    email : STRING
     username : STRING
     password : STRING
-    active : BOOLEAN
 }
 
 entity "Transaction" as transaction {

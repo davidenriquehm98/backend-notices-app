@@ -1,0 +1,78 @@
+entity-relationship-diagram
+
+roles [icon: ruler] {
+  id_rol number(24,0) pk
+  nombre varchar(64)
+  descripcion varchar(512)
+  es_administrador varchar(5)
+  gestiona_noticias_eventos varchar(5)
+  gestiona_contactos_enlaces varchar(5)
+}
+
+categorias [icon: layers] {
+  id_categoria number(24,0) pk
+  nombre varchar(64)
+  imagen varchar(512)
+}
+
+carreras [icon: briefcase] {
+  id_carrera number(24,0) pk
+  nombre varchar(64)
+  imagen varchar(512)
+}
+
+usuarios [icon: user] {
+  id_usuario number(24,0) pk
+  nombre varchar(128)
+  correo_electronico varchar(128)
+  clave varchar(128)
+  imagen varchar(512)
+  id_rol number(24,0) fk
+  id_carrera number(24,0) fk
+}
+
+noticias_eventos [icon: file-text, color: blue] {
+  id_noticia number(24,0) pk
+  titulo varchar(256)
+  descripcion varchar(1084)
+  imagen varchar(512)
+  envia_recordatorio varchar(5)
+  dias_recordatorio number(4,0)
+  id_carrera number(24,0) fk
+  id_categoria number(24,0) fk
+  fecha_creacion datetime
+  id_usuario_creacion number(24,0) fk
+  fecha_publicacion datetime
+  fecha_vencimiento datetime
+}
+
+contactos_enlaces [icon: phone-incoming, color: green] {
+  id_contacto number(24,0) pk
+  titulo varchar(256)
+  descripcion varchar(512)
+  enlace varchar(256)
+  correo_electronico varchar(128)
+  telefono varchar(128)
+  imagen varchar(512)
+  id_carrera number(24,0) fk
+  id_categoria number(24,0) fk
+  fecha_creacion datetime
+  id_usuario_creacion number(24,0) fk
+}
+
+noticias_favoritos [icon: bookmark, color: red] {
+  id_favoritos number(24,0) pk
+  id_usuario number(24,0) fk
+  id_noticia number(24,0) fk
+}
+
+usuarios.id_rol > roles.id_rol
+usuarios.id_carrera > carreras.id_carrera
+noticias_eventos.id_carrera > carreras.id_carrera
+noticias_eventos.id_categoria > categorias.id_categoria
+noticias_eventos.id_usuario_creacion > usuarios.id_usuario
+contactos_enlaces.id_carrera > carreras.id_carrera
+contactos_enlaces.id_categoria > categorias.id_categoria
+contactos_enlaces.id_usuario_creacion > usuarios.id_usuario
+noticias_favoritos.id_usuario > usuarios.id_usuario
+noticias_favoritos.id_noticia > noticias_eventos.id_noticia
